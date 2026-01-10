@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrethSearch - Cloud Study Index</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --admin-bg: #1e293b;
+            --font-stack: system-ui, -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: var(--font-stack); background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 0; }
+        .container { max-width: 48rem; margin: 0 auto; padding: 0 1.5rem; }
+        
+        header { margin-bottom: 2.5rem; text-align: left; }
+        h1 { font-size: 2.5rem; font-weight: 800; margin: 0; }
+        .dot { color: var(--primary); }
+
+        /* Search Interface */
+        .search-container { position: relative; margin-bottom: 2rem; }
+        #searchInput {
+            width: 100%; 
+            padding: 1.25rem 1rem 1.25rem 1.25rem; 
+            font-size: 1.1rem;
+            border-radius: 16px; 
+            border: 2px solid var(--border); 
+            outline: none; 
+            transition: 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        #searchInput:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+
+        /* Result Cards */
+        .result-card { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            padding: 1.5rem; 
+            margin-bottom: 1rem; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        .result-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .badge { font-size: 0.7rem; font-weight: 800; background: var(--primary-light); color: var(--primary); padding: 0.3rem 0.6rem; border-radius: 10px; text-transform: uppercase; }
+        
+        /* Admin Section */
+        #adminPanel { background: var(--admin-bg); border-radius: 20px; padding: 2rem; color: white; margin-bottom: 2rem; display: none; }
+        .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
+        .admin-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #475569; background: #334155; color: white; font-size: 1rem; }
+
+        #toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: white; padding: 0.8rem 1.5rem; border-radius: 50px;
+            opacity: 0; transition: 0.3s; pointer-events: none;
+        }
+
+        #welcome-msg { text-align: center; color: var(--text-muted); padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TrethSearch<span class="dot">.</span></h1>
+            <p style="color: var(--text-muted)">Cloud Study Index</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search topics (e.g. Physics, Equations...)" autocomplete="off">
+        </div>
+
+        <div id="adminPanel">
+            <h3 style="margin-top:0">Cloud Entry Manager</h3>
+            <input id="newKey" class="admin-input" type="text" placeholder="Topic Title">
+            <input id="newCat" class="admin-input" type="text" placeholder="Category (Subject)">
+            <textarea id="newVal" class="admin-input" placeholder="Notes or information..." rows="4"></textarea>
+            <button id="saveBtn" class="btn">Add to Index</button>
+            <button id="logoutBtn" class="btn" style="background:#475569; margin-top:5px;">Close Admin</button>
+        </div>
+
+        <div id="results">
+            <div id="welcome-msg">Connecting to cloud...</div>
+        </div>
+    </div>
+
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        const firebaseConfig = JSON.parse(__firebase_config);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'treth-engine-v1';
+
+        const ADMIN_PASS = "displayflex11!";
+        let cloudData = [];
+
+        // STARTER DATA: These only show up when typing
+        const starterData = [
+            { key: "Photosynthesis", cat: "Biology", val: "The process by which plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar." },
+            { key: "Newton's First Law", cat: "Physics", val: "An object at rest stays at rest, and an object in motion stays in motion unless acted upon by an external force." },
+            { key: "Pythagorean Theorem", cat: "Math", val: "In a right-angled triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides (a² + b² = c²)." },
+            { key: "Water Cycle", cat: "Science", val: "The continuous movement of water within the Earth and atmosphere through evaporation, condensation, and precipitation." },
+            { key: "Periodic Table", cat: "Chemistry", val: "A tabular display of the chemical elements, organized by atomic number and chemical properties." }
+        ];
+
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+
+        function render(data, isSearching) {
+            const res = document.getElementById('results');
+            
+            if (!isSearching) {
+                res.innerHTML = "<div id='welcome-msg'>Start typing to search the index...</div>";
+                return;
+            }
+
+            res.innerHTML = data.length ? "" : "<div style='text-align:center; padding:40px; color:gray;'>No topics found.</div>";
+            
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <span class="badge">${item.cat || 'General'}</span>
+                    <h3 style="margin:10px 0 5px">${item.key}</h3>
+                    <p style="color:var(--text-muted); margin:0; line-height:1.5;">${item.val}</p>
+                `;
+                card.onclick = () => {
+                    const el = document.createElement('textarea');
+                    el.value = item.val; 
+                    document.body.appendChild(el); 
+                    el.select();
+                    document.execCommand('copy'); 
+                    document.body.removeChild(el);
+                    showToast();
+                };
+                res.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchInput').oninput = (e) => {
+            const val = e.target.value.trim();
+            
+            if(val === ADMIN_PASS) {
+                document.getElementById('adminPanel').style.display = 'block';
+                e.target.value = "";
+                return;
+            }
+
+            if (val === "") {
+                render([], false);
+                return;
+            }
+
+            // Combine cloud data and starter data for searching
+            const combined = [...cloudData, ...starterData];
+            const filtered = combined.filter(i => 
+                i.key.toLowerCase().includes(val.toLowerCase()) || 
+                i.cat.toLowerCase().includes(val.toLowerCase())
+            );
+            render(filtered, true);
+        };
+
+        document.getElementById('saveBtn').onclick = async () => {
+            if (!auth.currentUser) return alert("Please wait for authentication to complete.");
+            
+            const key = document.getElementById('newKey').value.trim();
+            const cat = document.getElementById('newCat').value.trim() || "General";
+            const val = document.getElementById('newVal').value.trim();
+            
+            if(!key || !val) return alert("Title and Info are required!");
+
+            try {
+                await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('main_index').add({
+                    key, cat, val, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('newKey').value = "";
+                document.getElementById('newVal').value = "";
+                alert("Saved to cloud!");
+            } catch (err) {
+                alert("Error saving: " + err.message);
+            }
+        };
+
+        document.getElementById('logoutBtn').onclick = () => {
+            document.getElementById('adminPanel').style.display = 'none';
+        };
+
+        const initApp = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await auth.signInWithCustomToken(__initial_auth_token);
+                } else {
+                    await auth.signInAnonymously();
+                }
+
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        db.collection('artifacts').doc(appId).collection('public').doc('data').collection('main_index')
+                            .onSnapshot(snap => {
+                                cloudData = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                                cloudData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                                
+                                // Initial state: don't show results until user types
+                                const currentInput = document.getElementById('searchInput').value.trim();
+                                if (currentInput === "") {
+                                    render([], false);
+                                } else {
+                                    // Refresh view if they are already typing
+                                    const combined = [...cloudData, ...starterData];
+                                    const filtered = combined.filter(i => 
+                                        i.key.toLowerCase().includes(currentInput.toLowerCase()) || 
+                                        i.cat.toLowerCase().includes(currentInput.toLowerCase())
+                                    );
+                                    render(filtered, true);
+                                }
+                            }, err => {
+                                console.error("Firestore Error:", err);
+                                document.getElementById('results').innerHTML = "Error loading cloud data.";
+                            });
+                    }
+                });
+            } catch (err) {
+                console.error("Auth Error:", err);
+                document.getElementById('results').innerHTML = "Authentication failed.";
+            }
+        };
+
+        initApp();
+    </script>
+</body>
+</html>
