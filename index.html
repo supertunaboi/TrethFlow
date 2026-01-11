@@ -16,7 +16,6 @@
             --text: #0f172a; 
             --primary: #6366f1; 
             --success: #10b981; 
-            --error: #ef4444; 
             --surface: #ffffff;
             --border: #e2e8f0;
             --grid-color: rgba(15, 23, 42, 0.1); 
@@ -45,11 +44,10 @@
             line-height: 1.6;
             transition: background 0.5s ease;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
             position: relative;
         }
 
-        /* Background Grid Animation */
+        /* Animated Grid Background */
         body::before {
             content: "";
             position: fixed;
@@ -66,7 +64,7 @@
 
         @keyframes gridBreath {
             0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.01); }
+            50% { opacity: 0.7; transform: scale(1.01); }
         }
 
         .container { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
@@ -86,8 +84,6 @@
             margin: 0; 
             cursor: pointer; 
             transition: var(--transition);
-            display: inline-flex;
-            align-items: baseline;
         }
         .logo:hover { transform: scale(1.05) rotate(-1deg); }
         .logo .dot { 
@@ -97,10 +93,8 @@
             background: var(--primary); 
             margin-left: 3px;
             border-radius: 1.5px;
-            transition: var(--transition);
         }
         
-        /* Status Pill Animation Logic */
         .status-pill {
             display: flex;
             align-items: center;
@@ -112,30 +106,8 @@
             color: var(--muted);
             background: var(--surface);
             border: 1px solid var(--border);
-            cursor: default;
-            transition: var(--transition);
             font-family: var(--font-brand);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            user-select: none;
-        }
-
-        .status-pill:hover { 
-            animation: snappyPing 1.5s cubic-bezier(0.45, 0, 0.55, 1) 1; 
-            color: var(--text);
-            border-color: var(--primary);
-            box-shadow: 0 8px 15px -3px rgba(0,0,0,0.1);
-        }
-
-        @keyframes snappyPing {
-            0%   { transform: rotate(0deg) scale(1); }
-            5%   { transform: rotate(-6deg) scale(1.05); }
-            15%  { transform: rotate(6deg) scale(1.05); }
-            25%  { transform: rotate(-4deg) scale(1.05); }
-            35%  { transform: rotate(4deg) scale(1.05); }
-            45%  { transform: rotate(-2deg) scale(1.05); }
-            55%  { transform: rotate(2deg) scale(1.05); }
-            70%  { transform: rotate(0deg) scale(1.05); }
-            100% { transform: rotate(0deg) scale(1); }
         }
 
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: 0.3s; }
@@ -175,10 +147,7 @@
         }
         .tab.active { color: var(--text); }
 
-        .search-wrapper { 
-            margin-bottom: 30px; 
-            perspective: 1000px;
-        }
+        .search-wrapper { margin-bottom: 30px; }
         
         #searchBar { 
             font-family: var(--font-main);
@@ -193,10 +162,9 @@
             outline: none;
             color: var(--text);
             box-sizing: border-box;
-            transform-origin: center;
         }
 
-        #searchBar:hover, #searchBar:focus { 
+        #searchBar:focus { 
             transform: scale(1.02); 
             border-color: var(--primary);
             box-shadow: 0 20px 50px rgba(0,0,0,0.1);
@@ -210,15 +178,14 @@
             margin-top: 16px; 
             transition: var(--transition);
             cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
         .card:hover { 
-            transform: scale(1.01) translateY(-4px); 
+            transform: translateY(-4px); 
             border-color: var(--primary);
             box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
         }
-        .card h3 { font-family: var(--font-brand); font-size: 22px; margin: 12px 0 8px; }
-        .card .badge { 
+        
+        .badge { 
             font-family: var(--font-brand);
             font-size: 11px; 
             font-weight: 800; 
@@ -239,25 +206,12 @@
             display: none;
             animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 20px 45px -5px rgba(99, 102, 241, 0.4);
-            font-family: var(--font-brand);
         }
 
         @keyframes bounceIn {
-            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        @media (min-width: 600px) { .color-grid { grid-template-columns: repeat(6, 1fr); } }
-
-        .color-dot { 
-            aspect-ratio: 1; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            border: 4px solid transparent; 
-            transition: var(--transition); 
-        }
-        .color-dot.selected { border-color: var(--text); transform: scale(1.1); }
 
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.4s ease-out; }
@@ -269,21 +223,32 @@
             border-radius: 18px; 
             border: none; 
             font-weight: 800; 
-            font-size: 16px;
             cursor: pointer; 
             transition: var(--transition);
         }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+
+        .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 20px; }
+        .color-dot { aspect-ratio: 1; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: 0.2s; }
+        .color-dot.selected { border-color: var(--text); transform: scale(1.1); }
+        
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--muted);
+            font-family: var(--font-brand);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 class="logo" id="mainLogo" onclick="switchMode('search', 0)">TrethFlow<div class="dot"></div></h1>
+            <h1 class="logo" onclick="switchMode('search', 0)">TrethFlow<div class="dot"></div></h1>
             <div id="statusPill" class="status-pill">
                 <div class="status-dot"></div>
-                <span id="statusTxt">Offline</span>
+                <span id="statusTxt">Connecting...</span>
             </div>
         </header>
 
@@ -294,39 +259,40 @@
             <button id="tab-settings" class="tab" onmouseenter="hoverTab(2)" onmouseleave="resetIndicator()" onclick="switchMode('settings', 2)">Settings</button>
         </div>
 
+        <!-- SEARCH VIEW -->
         <div id="view-search" class="view active">
-            <div class="search-wrapper">
-                <input type="text" id="searchBar" placeholder="What are you looking for?" autocomplete="off">
-            </div>
+            <input type="text" id="searchBar" placeholder="Search knowledge base..." autocomplete="off">
             <div id="instantMatch">
-                <span id="matchCat" style="font-size:12px; text-transform:uppercase; letter-spacing:1.5px; opacity:0.85; font-weight:800;">Primary Match</span>
-                <h2 id="matchTitle" style="font-size:32px; margin: 12px 0; font-weight:800; letter-spacing:-1px;">Topic</h2>
-                <p id="matchVal" style="margin:0; opacity:0.95; font-size:18px; font-family:var(--font-main); line-height:1.5;"></p>
+                <span id="matchCat" class="badge" style="background:rgba(255,255,255,0.2); color:white;">Category</span>
+                <h2 id="matchTitle" style="font-size:32px; margin: 15px 0; font-family:var(--font-brand);">Topic</h2>
+                <p id="matchVal" style="margin:0; opacity:0.9; font-size:18px;"></p>
             </div>
             <div id="resultsList"></div>
         </div>
 
+        <!-- CONTRIBUTE VIEW -->
         <div id="view-request" class="view">
-            <div class="panel card" style="cursor:default;">
-                <h3 style="margin:0 0 20px 0; font-size:26px;">Share Knowledge</h3>
-                <input type="text" id="reqTitle" placeholder="Topic Title" style="width:100%; border-radius:14px; padding:16px; border:1px solid var(--border); background:var(--bg); color:var(--text); margin-bottom:12px; box-sizing:border-box; font-size:16px;">
-                <input type="text" id="reqCat" placeholder="Category" style="width:100%; border-radius:14px; padding:16px; border:1px solid var(--border); background:var(--bg); color:var(--text); margin-bottom:12px; box-sizing:border-box; font-size:16px;">
-                <textarea id="reqInfo" placeholder="Write the details here..." rows="5" style="width:100%; border-radius:14px; padding:18px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--font-main); margin-bottom:20px; box-sizing:border-box; font-size:16px;"></textarea>
-                <button class="btn btn-primary" style="width:100%;" onclick="submitRequest()">Submit Suggestion</button>
+            <div class="card" style="cursor:default;">
+                <h3 style="margin-top:0; font-family:var(--font-brand); font-size:24px;">Suggest Content</h3>
+                <input type="text" id="reqTitle" placeholder="Topic Title" style="width:100%; padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:15px; box-sizing:border-box;">
+                <input type="text" id="reqCat" placeholder="Category (e.g. Science, Math)" style="width:100%; padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:15px; box-sizing:border-box;">
+                <textarea id="reqInfo" placeholder="Description..." rows="4" style="width:100%; padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:20px; box-sizing:border-box; font-family:var(--font-main);"></textarea>
+                <button class="btn btn-primary" style="width:100%;" onclick="submitRequest()">Send Suggestion</button>
             </div>
         </div>
 
+        <!-- SETTINGS VIEW -->
         <div id="view-settings" class="view">
-            <div class="panel card" style="cursor:default;">
-                <h3 style="margin:0 0 24px 0; font-size:26px;">Site Settings</h3>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; font-family:var(--font-brand); font-weight:700; font-size:18px;">
-                    <span>Theme Mode</span>
-                    <select id="themeSelect" onchange="updateTheme()" style="width:auto; margin:0; padding:10px 15px; border-radius:12px; font-family:var(--font-brand); border: 1px solid var(--border); background: var(--bg); color: var(--text);">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
+            <div class="card" style="cursor:default;">
+                <h3 style="margin-top:0; font-family:var(--font-brand); font-size:24px;">Preferences</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                    <span style="font-weight:600;">Theme</span>
+                    <select id="themeSelect" onchange="updateTheme()" style="padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+                        <option value="light">Light Mode</option>
+                        <option value="dark">Dark Mode</option>
                     </select>
                 </div>
-                <span style="font-size:16px; font-family:var(--font-brand); font-weight:800;">Accent Palette</span>
+                <span style="font-weight:600;">Accent Color</span>
                 <div class="color-grid" id="accentPicker">
                     <div class="color-dot" style="background:#6366f1" onclick="setAccent('#6366f1')"></div>
                     <div class="color-dot" style="background:#10b981" onclick="setAccent('#10b981')"></div>
@@ -337,12 +303,16 @@
                 </div>
             </div>
         </div>
+
+        <footer>
+            &copy; 2026 Dtephen MacDonald. All Rights Reserved.
+        </footer>
     </div>
 
     <script>
-        // Global variables for Firebase
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "", 
+        // CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyA19d5U_di3_B2tmmDdj8wE0Z7_f0J0_0",
             authDomain: "trethsearch.firebaseapp.com",
             projectId: "trethsearch",
             storageBucket: "trethsearch.firebasestorage.app",
@@ -350,23 +320,23 @@
             appId: "1:169526814734:web:bc376db9f61603935bf45f"
         };
 
-        // Initialize Firebase
+        // INITIALIZE
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-flow';
+        const appId = 'trethflow-main';
 
         let mainData = [];
         let activeIndex = 0;
 
-        // UI Helpers
+        // UI CORE
         function updateIndicator(index) {
             const indicator = document.getElementById('navIndicator');
             const tabs = document.querySelectorAll('.tab');
-            const targetTab = tabs[index];
-            if (!targetTab) return;
-            indicator.style.width = targetTab.offsetWidth + 'px';
-            indicator.style.transform = `translateX(${targetTab.offsetLeft - 6}px)`;
+            const target = tabs[index];
+            if (!target) return;
+            indicator.style.width = target.offsetWidth + 'px';
+            indicator.style.transform = `translateX(${target.offsetLeft - 6}px)`;
         }
 
         function hoverTab(index) { updateIndicator(index); }
@@ -381,103 +351,96 @@
             updateIndicator(index);
         }
 
-        document.getElementById('searchBar').oninput = (e) => renderSearch(e.target.value.trim());
-
-        function renderSearch(term) {
+        // SEARCH ENGINE
+        document.getElementById('searchBar').oninput = (e) => {
+            const term = e.target.value.trim().toLowerCase();
             const list = document.getElementById('resultsList');
             const instant = document.getElementById('instantMatch');
-            if(!term) { list.innerHTML = ""; instant.style.display = "none"; return; }
             
+            if(!term) { list.innerHTML = ""; instant.style.display = "none"; return; }
+
             const filtered = mainData.filter(i => 
-                (i.key && i.key.toLowerCase().includes(term.toLowerCase())) || 
-                (i.cat && i.cat.toLowerCase().includes(term.toLowerCase()))
+                i.key.toLowerCase().includes(term) || i.cat.toLowerCase().includes(term)
             );
 
-            const bestMatch = filtered.find(i => i.key.toLowerCase().startsWith(term.toLowerCase())) || filtered[0];
+            const best = filtered.find(i => i.key.toLowerCase().startsWith(term)) || filtered[0];
 
-            if(bestMatch && term.length >= 2) {
+            if(best && term.length >= 2) {
                 instant.style.display = "block";
-                document.getElementById('matchCat').innerText = bestMatch.cat;
-                document.getElementById('matchTitle').innerText = bestMatch.key;
-                document.getElementById('matchVal').innerText = bestMatch.val;
+                document.getElementById('matchCat').innerText = best.cat;
+                document.getElementById('matchTitle').innerText = best.key;
+                document.getElementById('matchVal').innerText = best.val;
             } else { instant.style.display = "none"; }
 
             list.innerHTML = filtered.map(i => `
-                <div class="card" onclick="copyVal('${i.val.replace(/'/g, "\\'")}')">
+                <div class="card" onclick="copyText('${i.val.replace(/'/g, "\\'")}')">
                     <span class="badge">${i.cat}</span>
-                    <h3>${i.key}</h3>
-                    <p style="margin:0; font-size:16px; color:var(--muted); font-family:var(--font-main);">${i.val}</p>
+                    <h3 style="margin: 10px 0 5px; font-family:var(--font-brand);">${i.key}</h3>
+                    <p style="margin:0; color:var(--muted); font-size:15px;">${i.val}</p>
                 </div>
             `).join('');
-        }
+        };
 
-        function copyVal(val) {
+        function copyText(val) {
             const el = document.createElement('textarea');
             el.value = val; document.body.appendChild(el); el.select();
             document.execCommand('copy'); document.body.removeChild(el);
         }
 
+        // FIREBASE ACTIONS
         async function submitRequest() {
             const key = document.getElementById('reqTitle').value;
             const cat = document.getElementById('reqCat').value || "General";
             const val = document.getElementById('reqInfo').value;
             if(!key || !val) return;
-            
+
             try {
-                await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('requests').add({ 
-                    key, cat, val, ts: firebase.firestore.FieldValue.serverTimestamp() 
+                await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('requests').add({
+                    key, cat, val, timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 document.getElementById('reqTitle').value = "";
                 document.getElementById('reqInfo').value = "";
                 switchMode('search', 0);
-            } catch(e) { console.error("Submit error:", e); }
+            } catch(e) { console.error(e); }
         }
 
+        // SETTINGS
         function updateTheme() {
             const mode = document.getElementById('themeSelect').value;
             document.body.className = mode === 'dark' ? 'dark-theme' : '';
-            localStorage.setItem('tf-mode', mode);
+            localStorage.setItem('tf-theme', mode);
         }
 
         function setAccent(color) {
             document.documentElement.style.setProperty('--primary', color);
             localStorage.setItem('tf-accent', color);
-            document.querySelectorAll('.color-dot').forEach(dot => {
-                dot.classList.toggle('selected', (dot.style.backgroundColor === color || dot.style.background.includes(color)));
+            document.querySelectorAll('.color-dot').forEach(d => {
+                d.classList.toggle('selected', d.style.backgroundColor === color || d.style.background.includes(color));
             });
         }
 
+        // STARTUP
         async function init() {
-            const m = localStorage.getItem('tf-mode') || 'light';
-            const a = localStorage.getItem('tf-accent') || '#6366f1';
-            document.getElementById('themeSelect').value = m;
+            // Load Settings
+            const savedTheme = localStorage.getItem('tf-theme') || 'light';
+            const savedAccent = localStorage.getItem('tf-accent') || '#6366f1';
+            document.getElementById('themeSelect').value = savedTheme;
             updateTheme();
-            setAccent(a);
-            setTimeout(() => updateIndicator(0), 400);
+            setAccent(savedAccent);
+            setTimeout(() => updateIndicator(0), 500);
 
             try {
-                // For GitHub/External sites:
-                // Ensure domain is whitelisted in Firebase Auth console
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await auth.signInWithCustomToken(__initial_auth_token);
-                } else {
-                    await auth.signInAnonymously();
-                }
-                
+                // Anonymous Auth for Security Rules
+                await auth.signInAnonymously();
                 document.getElementById('statusPill').classList.add('online');
                 document.getElementById('statusTxt').innerText = "Online";
 
-                // Listen for data
-                db.collection('artifacts').doc(appId).collection('public').doc('data').collection('main_index').onSnapshot(s => {
-                    mainData = s.docs.map(d => d.data());
-                    if(document.getElementById('searchBar').value) renderSearch(document.getElementById('searchBar').value);
-                }, err => {
-                    console.error("Connection issue:", err);
-                    document.getElementById('statusTxt').innerText = "Sync Error";
+                // Listen for Data Updates
+                db.collection('artifacts').doc(appId).collection('public').doc('data').collection('main_index').onSnapshot(snap => {
+                    mainData = snap.docs.map(doc => doc.data());
                 });
-            } catch(e) { 
-                console.error("Init Error:", e);
-                document.getElementById('statusTxt').innerText = "Offline";
+            } catch(e) {
+                document.getElementById('statusTxt').innerText = "Sync Error";
             }
         }
 
