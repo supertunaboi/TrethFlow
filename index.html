@@ -17,6 +17,7 @@
         .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; transition: 0.3s; }
         .online { background: var(--success); box-shadow: 0 0 10px var(--success); }
         .offline { background: var(--error); }
+        .waiting { background: #fbbf24; box-shadow: 0 0 10px #fbbf24; }
         input { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 18px; outline: none; }
         input:focus { border-color: var(--primary); }
         .result-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; cursor: pointer; transition: 0.2s; }
@@ -54,12 +55,20 @@
     </div>
 
     <script>
-        // Load configurations
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // Use a safe wrapper to parse config
+        let firebaseConfig = {};
+        try {
+            firebaseConfig = JSON.parse(__firebase_config);
+        } catch(e) {
+            console.error("Config parse error");
+        }
+        
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'treth-v1';
         
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.firestore();
         const auth = firebase.auth();
 
@@ -73,7 +82,12 @@
             const d = document.getElementById('dot');
             const t = document.getElementById('statusTxt');
             const r = document.getElementById('retryBtn');
-            d.className = 'status-dot ' + (mode === 'on' ? 'online' : (mode === 'off' ? 'offline' : ''));
+            
+            d.className = 'status-dot';
+            if (mode === 'on') d.classList.add('online');
+            else if (mode === 'off') d.classList.add('offline');
+            else if (mode === 'wait') d.classList.add('waiting');
+            
             t.innerText = label;
             r.style.display = (mode === 'off') ? 'inline-block' : 'none';
         }
@@ -81,7 +95,7 @@
         async function startCloud() {
             setVisuals('wait', 'Handshaking...');
             try {
-                // Ensure auth first (Required for Firestore access)
+                // Ensure auth first
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await auth.signInWithCustomToken(__initial_auth_token);
                 } else {
@@ -101,7 +115,7 @@
 
             } catch (err) {
                 console.error("Auth Error:", err);
-                setVisuals('off', 'Sign-in Failed');
+                setVisuals('off', 'Connection Failed');
             }
         }
 
@@ -118,8 +132,8 @@
 
             const combined = [...localItems, ...cloudItems];
             const filtered = combined.filter(i => 
-                i.key?.toLowerCase().includes(term.toLowerCase()) || 
-                i.cat?.toLowerCase().includes(term.toLowerCase())
+                (i.key && i.key.toLowerCase().includes(term.toLowerCase())) || 
+                (i.cat && i.cat.toLowerCase().includes(term.toLowerCase()))
             );
 
             list.innerHTML = filtered.map(i => `
@@ -151,13 +165,16 @@
 
         // Run on load
         window.onload = () => {
-            startCloud();
-            // Fallback timer: if not connected in 5 seconds, show retry button
+            // Short delay to ensure browser environment is stable
+            setTimeout(startCloud, 500);
+            
+            // Timeout Check
             setTimeout(() => {
-                if(document.getElementById('statusTxt').innerText === 'Waking Cloud...') {
+                const status = document.getElementById('statusTxt').innerText;
+                if(status === 'Waking Cloud...' || status === 'Handshaking...') {
                     setVisuals('off', 'Timed Out');
                 }
-            }, 5000);
+            }, 8000);
         };
     </script>
 </body>
