@@ -4,28 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrethSearch - Cloud Index</title>
-    <!-- Using the standard Compat SDK for maximum GitHub compatibility -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-        :root { --bg: #f8fafc; --text: #0f172a; --primary: #4f46e5; --success: #10b981; --error: #ef4444; }
+        :root { --bg: #f8fafc; --text: #0f172a; --primary: #4f46e5; --success: #10b981; --error: #ef4444; --admin: #1e293b; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; margin: 0; }
         .container { max-width: 600px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
-        .status-box { text-align: right; }
-        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; transition: 0.3s; }
-        .online { background: var(--success); box-shadow: 0 0 10px var(--success); }
-        .offline { background: var(--error); }
-        .waiting { background: #fbbf24; box-shadow: 0 0 10px #fbbf24; }
-        input { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 18px; outline: none; }
+        
+        /* Status UI */
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; }
+        .online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        
+        /* Inputs */
+        input, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; margin-bottom: 10px; }
         input:focus { border-color: var(--primary); }
-        .result-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; cursor: pointer; transition: 0.2s; }
-        .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        #adminArea { display: none; background: #1e293b; color: white; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .manual-btn { font-size: 10px; color: var(--primary); background: none; border: 1px solid var(--primary); padding: 2px 5px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
-        .error-hint { font-size: 11px; color: var(--error); display: none; margin-top: 4px; max-width: 220px; line-height: 1.3; text-align: right; font-weight: 500; }
+        #searchBar { padding: 16px; font-size: 18px; margin-bottom: 20px; }
+
+        /* Panels */
+        .panel { display: none; background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .admin-panel { background: var(--admin); color: white; }
+        .admin-panel input, .admin-panel textarea { background: #334155; border-color: #475569; color: white; }
+        
+        /* Cards */
+        .result-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; position: relative; }
+        .request-card { border-left: 4px solid #fbbf24; margin-bottom: 10px; background: #fffbeb; }
+        
+        /* Buttons */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-approve { background: var(--success); color: white; margin-right: 5px; }
+        .btn-reject { background: var(--error); color: white; }
+        .tab-btn { background: #e2e8f0; font-size: 12px; margin-bottom: 10px; margin-right: 5px; }
+        .tab-active { background: var(--primary); color: white; }
+
+        .badge { font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: #e0e7ff; color: #4338ca; }
     </style>
 </head>
 <body>
@@ -33,31 +47,56 @@
         <header>
             <div>
                 <h1 style="margin:0">TrethSearch<span style="color:var(--primary)">.</span></h1>
-                <p style="margin:0; color:#64748b; font-size:14px">Universal Study Index</p>
+                <p id="modeDesc" style="margin:0; color:#64748b; font-size:14px">Search the Index</p>
             </div>
-            <div class="status-box">
+            <div style="text-align:right">
                 <div id="dot" class="status-dot"></div>
-                <div id="statusTxt" style="font-size:12px; color:#64748b">Waking Cloud...</div>
-                <div id="errorHint" class="error-hint"></div>
-                <button id="retryBtn" class="manual-btn" style="display:none" onclick="startCloud()">Retry Connection</button>
+                <div id="statusTxt" style="font-size:12px; color:#64748b">Connecting...</div>
             </div>
         </header>
 
-        <input type="text" id="searchBar" placeholder="Search topics..." autocomplete="off">
-
-        <div id="adminArea">
-            <h3 style="margin-top:0">Add Cloud Entry</h3>
-            <input type="text" id="addTitle" placeholder="Title" style="margin-bottom:10px; font-size:14px">
-            <input type="text" id="addCat" placeholder="Category" style="margin-bottom:10px; font-size:14px">
-            <textarea id="addInfo" placeholder="Details..." style="width:100%; height:80px; padding:10px; border-radius:8px; border:none; margin-bottom:10px"></textarea>
-            <button class="btn" onclick="uploadNote()">Push to Cloud</button>
+        <!-- Mode Toggles -->
+        <div style="margin-bottom: 15px;">
+            <button id="btnSearch" class="btn tab-btn tab-active" onclick="switchMode('search')">Search</button>
+            <button id="btnRequest" class="btn tab-btn" onclick="switchMode('request')">Request Add</button>
+            <button id="btnAdmin" class="btn tab-btn" style="display:none" onclick="switchMode('admin')">Admin Console</button>
         </div>
 
-        <div id="resultsList" style="margin-top:20px"></div>
+        <!-- Search Mode -->
+        <div id="viewSearch">
+            <input type="text" id="searchBar" placeholder="Search topics..." autocomplete="off">
+            <div id="resultsList"></div>
+        </div>
+
+        <!-- Request Mode (Public) -->
+        <div id="viewRequest" class="panel">
+            <h3 style="margin-top:0">Suggest a Topic</h3>
+            <p style="font-size: 13px; color: #64748b;">Submit info to be reviewed by the admin.</p>
+            <input type="text" id="reqTitle" placeholder="Topic Title">
+            <input type="text" id="reqCat" placeholder="Category (e.g. Science)">
+            <textarea id="reqInfo" placeholder="Details..." rows="3"></textarea>
+            <button class="btn btn-primary" onclick="submitRequest()">Submit for Review</button>
+        </div>
+
+        <!-- Admin Mode -->
+        <div id="viewAdmin" class="panel admin-panel">
+            <h3 style="margin-top:0">Admin Dashboard</h3>
+            
+            <div style="border-bottom: 1px solid #475569; padding-bottom: 15px; margin-bottom: 15px;">
+                <h4 style="margin:0 0 10px 0">Direct Add</h4>
+                <input type="text" id="adminTitle" placeholder="Title">
+                <input type="text" id="adminCat" placeholder="Category">
+                <textarea id="adminInfo" placeholder="Details..." rows="2"></textarea>
+                <button class="btn btn-primary" onclick="adminAdd()">Add Directly</button>
+            </div>
+
+            <h4 style="margin:0 0 10px 0">Pending Requests</h4>
+            <div id="pendingList"></div>
+        </div>
+
     </div>
 
     <script>
-        // Your Firebase Configuration
         const myManualConfig = {
             apiKey: "AIzaSyA19d5U_di3_B2tmmDdj8wi61xO6DAlGok",
             authDomain: "trethsearch.firebaseapp.com",
@@ -68,137 +107,150 @@
             measurementId: "G-BCT7498TBJ"
         };
 
-        // Initialize Firebase safely
-        let db, auth;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(myManualConfig);
-            }
-            db = firebase.firestore();
-            auth = firebase.auth();
-        } catch (e) {
-            console.error("Firebase Init Error:", e.message);
-            window.firebaseError = e.message;
-        }
+        firebase.initializeApp(myManualConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        let cloudItems = [];
-        const localItems = [
-            {key: "Photosynthesis", cat: "Bio", val: "Plants converting light to energy."},
-            {key: "Gravity", cat: "Physics", val: "9.8 m/s² attraction force."}
-        ];
+        let mainData = [];
+        let pendingData = [];
+        const ADMIN_PASS = "displayflex11!";
 
-        function setVisuals(mode, label, hint = "") {
-            const d = document.getElementById('dot');
-            const t = document.getElementById('statusTxt');
-            const r = document.getElementById('retryBtn');
-            const h = document.getElementById('errorHint');
+        // Logic to switch between UI tabs
+        function switchMode(mode) {
+            const views = ['viewSearch', 'viewRequest', 'viewAdmin'];
+            const btns = ['btnSearch', 'btnRequest', 'btnAdmin'];
             
-            d.className = 'status-dot';
-            if (mode === 'on') d.classList.add('online');
-            else if (mode === 'off') d.classList.add('offline');
-            else if (mode === 'wait') d.classList.add('waiting');
-            
-            t.innerText = label;
-            r.style.display = (mode === 'off') ? 'inline-block' : 'none';
-            if (hint) {
-                h.innerText = hint;
-                h.style.display = 'block';
-            } else {
-                h.style.display = 'none';
+            views.forEach(v => document.getElementById(v).style.display = 'none');
+            btns.forEach(b => document.getElementById(b).classList.remove('tab-active'));
+
+            if(mode === 'search') {
+                document.getElementById('viewSearch').style.display = 'block';
+                document.getElementById('btnSearch').classList.add('tab-active');
+                document.getElementById('modeDesc').innerText = "Search the Index";
+            } else if (mode === 'request') {
+                document.getElementById('viewRequest').style.display = 'block';
+                document.getElementById('btnRequest').classList.add('tab-active');
+                document.getElementById('modeDesc').innerText = "Submit a Suggestion";
+            } else if (mode === 'admin') {
+                document.getElementById('viewAdmin').style.display = 'block';
+                document.getElementById('btnAdmin').classList.add('tab-active');
+                document.getElementById('modeDesc').innerText = "Manage Requests";
             }
         }
 
-        let unsubscribe = null;
-
-        async function startCloud() {
-            if (window.firebaseError) {
-                setVisuals('off', 'Config Error', "Please check your Firebase keys.");
-                return;
-            }
-
-            if (unsubscribe) unsubscribe(); // Cleanup old listener if retrying
-
-            setVisuals('wait', 'Connecting...');
-            try {
-                // Sign in anonymously
-                await auth.signInAnonymously();
-
-                const notesRef = db.collection('notes');
-                
-                unsubscribe = notesRef.onSnapshot((query) => {
-                    cloudItems = query.docs.map(doc => doc.data());
-                    setVisuals('on', 'Cloud Active');
-                }, (err) => {
-                    console.error("Firestore Error Detail:", err);
-                    const msg = err.message || "";
-                    if (msg.includes("permission-denied") || err.code === "permission-denied") {
-                        setVisuals('off', 'Permission Error', "Go to Firestore > Rules tab and change 'allow read, write: if false;' to 'true', then Publish.");
-                    } else if (msg.includes("not-found")) {
-                        setVisuals('off', 'No Database', "Go to Firestore in Firebase Console and click 'Create Database'. Choose Standard Mode.");
-                    } else {
-                        setVisuals('off', 'Offline Mode', "Retrying connection...");
-                        setTimeout(startCloud, 5000); // Auto-retry for network blips
-                    }
-                });
-
-            } catch (err) {
-                console.error("Auth Error Detail:", err);
-                if (err.code === 'auth/configuration-not-found') {
-                    setVisuals('off', 'Enable Anon Login', "Go to Auth > Sign-in method and enable Anonymous.");
-                } else {
-                    setVisuals('off', 'Auth Failed', err.message);
-                }
-            }
-        }
-
+        // Search Bar Handler
         document.getElementById('searchBar').oninput = (e) => {
-            const term = e.target.value;
-            if(term === "displayflex11!") {
-                document.getElementById('adminArea').style.display = 'block';
+            const term = e.target.value.trim();
+            if(term === ADMIN_PASS) {
+                document.getElementById('btnAdmin').style.display = 'inline-block';
+                switchMode('admin');
                 e.target.value = ""; return;
             }
-            
+            renderSearch(term);
+        };
+
+        function renderSearch(term) {
             const list = document.getElementById('resultsList');
             if(!term) { list.innerHTML = ""; return; }
-
-            const combined = [...localItems, ...cloudItems];
-            const filtered = combined.filter(i => 
-                (i.key && i.key.toLowerCase().includes(term.toLowerCase())) || 
-                (i.cat && i.cat.toLowerCase().includes(term.toLowerCase()))
+            
+            const filtered = mainData.filter(i => 
+                i.key.toLowerCase().includes(term.toLowerCase()) || 
+                i.cat.toLowerCase().includes(term.toLowerCase())
             );
 
             list.innerHTML = filtered.map(i => `
                 <div class="result-card">
-                    <small style="color:var(--primary); font-weight:bold">${i.cat || 'Note'}</small>
-                    <h3 style="margin:5px 0">${i.key}</h3>
+                    <span class="badge">${i.cat}</span>
+                    <h3 style="margin:8px 0 4px">${i.key}</h3>
                     <p style="margin:0; font-size:14px; color:#475569">${i.val}</p>
                 </div>
             `).join('');
-        };
+        }
 
-        async function uploadNote() {
-            const key = document.getElementById('addTitle').value;
-            const cat = document.getElementById('addCat').value;
-            const val = document.getElementById('addInfo').value;
-            if(!key || !val) return;
+        // --- PUBLIC REQUEST LOGIC ---
+        async function submitRequest() {
+            const key = document.getElementById('reqTitle').value;
+            const cat = document.getElementById('reqCat').value || "General";
+            const val = document.getElementById('reqInfo').value;
+            if(!key || !val) return alert("Please fill in Title and Details.");
 
             try {
-                await db.collection('notes').add({
-                    key, cat, val, created: Date.now()
-                });
-                document.getElementById('addTitle').value = "";
-                document.getElementById('addInfo').value = "";
-                document.getElementById('addCat').value = "";
-                alert("Saved to Cloud!");
-            } catch(e) {
-                console.error("Upload Error:", e.message);
-                alert("Save failed. Check if 'Rules' are set to true in Firebase.");
+                await db.collection('requests').add({ key, cat, val, status: 'pending', ts: Date.now() });
+                alert("Request submitted! It will appear after admin approval.");
+                document.getElementById('reqTitle').value = "";
+                document.getElementById('reqInfo').value = "";
+                switchMode('search');
+            } catch(e) { alert("Error: " + e.message); }
+        }
+
+        // --- ADMIN ACTIONS ---
+        async function adminAdd() {
+            const key = document.getElementById('adminTitle').value;
+            const cat = document.getElementById('adminCat').value || "Admin Add";
+            const val = document.getElementById('adminInfo').value;
+            if(!key || !val) return;
+            await db.collection('notes').add({ key, cat, val, ts: Date.now() });
+            document.getElementById('adminTitle').value = "";
+            document.getElementById('adminInfo').value = "";
+            alert("Added directly to index.");
+        }
+
+        async function approveRequest(id, data) {
+            try {
+                // 1. Add to main notes
+                await db.collection('notes').add({ ...data, ts: Date.now() });
+                // 2. Remove from requests
+                await db.collection('requests').doc(id).delete();
+            } catch(e) { console.error(e); }
+        }
+
+        async function rejectRequest(id) {
+            if(confirm("Reject and delete this request?")) {
+                await db.collection('requests').doc(id).delete();
             }
         }
 
-        window.onload = () => {
-            setTimeout(startCloud, 1000);
-        };
+        function renderPending() {
+            const list = document.getElementById('pendingList');
+            if(pendingData.length === 0) {
+                list.innerHTML = "<p style='color:#94a3b8; font-size:13px'>No pending requests.</p>";
+                return;
+            }
+            list.innerHTML = pendingData.map(i => `
+                <div class="result-card request-card" style="color:black">
+                    <span class="badge">${i.cat}</span>
+                    <h4 style="margin:5px 0">${i.key}</h4>
+                    <p style="font-size:13px; margin-bottom:10px">${i.val}</p>
+                    <button class="btn btn-approve" onclick='approveRequest("${i.id}", ${JSON.stringify(i).replace(/"/g, '&quot;')})'>Approve</button>
+                    <button class="btn btn-reject" onclick='rejectRequest("${i.id}")'>Reject</button>
+                </div>
+            `).join('');
+        }
+
+        // --- CLOUD SYNC ---
+        async function init() {
+            try {
+                await auth.signInAnonymously();
+                document.getElementById('dot').classList.add('online');
+                document.getElementById('statusTxt').innerText = "Cloud Active";
+
+                // Listen to main notes
+                db.collection('notes').onSnapshot(snap => {
+                    mainData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                });
+
+                // Listen to requests
+                db.collection('requests').onSnapshot(snap => {
+                    pendingData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderPending();
+                });
+            } catch(e) {
+                document.getElementById('statusTxt').innerText = "Auth Error";
+                console.error(e);
+            }
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
