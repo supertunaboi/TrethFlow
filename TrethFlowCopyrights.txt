@@ -1,0 +1,11 @@
+Copyright (c) 2026-Present Stephen MacDonald
+
+ALL RIGHTS RESERVED.
+
+This software and all associated files are the private property of the creator. 
+Unauthorized copying, modification, distribution, or use of this code, 
+in part or in whole, is strictly prohibited. 
+
+By viewing this repository, you agree not to reproduce, claim ownership, 
+or re-distribute any part of this project without explicit permission 
+from the creator.
