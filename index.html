@@ -1,454 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrethFlow - Fluid Knowledge Base</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --bg: #f8fafc; 
-            --text: #0f172a; 
-            --primary: #6366f1; 
-            --primary-rgb: 99, 102, 241;
-            --success: #10b981; 
-            --danger: #ef4444;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-            --grid-color: rgba(15, 23, 42, 0.08); 
-            --muted: #64748b;
-            --radius: 24px;
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --font-main: 'Inter', sans-serif;
-            --font-brand: 'Outfit', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrethFlow - Fluid Knowledge Base</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root { 
+    --bg: #f8fafc; 
+    --text: #0f172a; 
+    --primary: #6366f1; 
+    --primary-rgb: 99, 102, 241;
+    --success: #10b981; 
+    --danger: #ef4444;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --grid-color: rgba(15, 23, 42, 0.08); 
+    --muted: #64748b;
+    --radius: 24px;
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --font-main: 'Inter', sans-serif;
+    --font-brand: 'Outfit', sans-serif;
+}
 
-        body.dark-theme {
-            --bg: #0f1115;
-            --text: #f1f5f9;
-            --surface: #1a1d23;
-            --border: #2d3139;
-            --grid-color: rgba(255, 255, 255, 0.1); 
-            --muted: #94a3b8;
-        }
-        
-        body { 
-            font-family: var(--font-main); 
-            background: var(--bg); 
-            color: var(--text); 
-            padding: 0; 
-            margin: 0; 
-            line-height: 1.6;
-            transition: background 0.5s ease;
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+body.dark-theme {
+    --bg: #0f1115;
+    --text: #f1f5f9;
+    --surface: #1a1d23;
+    --border: #2d3139;
+    --grid-color: rgba(255, 255, 255, 0.1); 
+    --muted: #94a3b8;
+}
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(var(--grid-color) 2px, transparent 2px);
-            background-size: 45px( 45px);
-            z-index: -1;
-            pointer-events: none;
-        }
+body { 
+    font-family: var(--font-main); 
+    background: var(--bg); 
+    color: var(--text); 
+    padding: 0; 
+    margin: 0; 
+    line-height: 1.6;
+    transition: background 0.5s ease;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
 
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 40px 20px;
-            flex: 1;
-            width: 100%;
-            box-sizing: border-box;
-        }
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(var(--grid-color) 2px, transparent 2px);
+    background-size: 45px 45px;
+    z-index: -1;
+    pointer-events: none;
+}
 
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 40px; 
-        }
-        
-        .logo { 
-            font-family: var(--font-brand);
-            font-size: clamp(24px, 5vw, 36px);
-            font-weight: 800; 
-            letter-spacing: -1.5px; 
-            margin: 0; 
-            cursor: pointer; 
-        }
+.container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 40px 20px;
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-        .logo .dot { 
-            display: inline-block;
-            width: 8px; height: 8px; 
-            background: var(--primary); 
-            margin-left: 3px;
-            border-radius: 2px;
-        }
-        
-        .status-pill {
-            display: flex; align-items: center; gap: 8px;
-            padding: 8px 16px; border-radius: 100px;
-            font-size: 12px; font-weight: 700;
-            color: var(--muted); background: var(--surface);
-            border: 1px solid var(--border);
-        }
+header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 40px; 
+}
 
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
-        .online .status-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.logo { 
+    font-family: var(--font-brand);
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 800; 
+    letter-spacing: -1.5px; 
+    margin: 0; 
+    cursor: pointer; 
+}
 
-        .nav-container {
-            position: relative;
-            background: var(--border);
-            padding: 4px;
-            border-radius: 18px;
-            display: flex;
-            margin-bottom: 30px;
-        }
+.logo .dot { 
+    display: inline-block;
+    width: 8px; height: 8px; 
+    background: var(--primary); 
+    margin-left: 3px;
+    border-radius: 2px;
+}
 
-        .nav-indicator {
-            position: absolute;
-            height: calc(100% - 8px);
-            background: var(--surface);
-            border-radius: 14px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-        }
+.status-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 700;
+    color: var(--muted); background: var(--surface);
+    border: 1px solid var(--border);
+}
 
-        .tab { 
-            flex: 1; padding: 12px 0;
-            font-family: var(--font-brand); font-size: 14px; font-weight: 700; 
-            cursor: pointer; border: none; background: transparent;
-            color: var(--muted); position: relative; z-index: 2;
-        }
-        .tab.active { color: var(--text); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.online .status-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
 
-        #searchBar { 
-            font-size: 18px; padding: 20px 25px; 
-            border-radius: 20px; border: 2px solid transparent; 
-            background: var(--surface); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            width: 100%; outline: none; color: var(--text);
-            box-sizing: border-box;
-        }
-        #searchBar:focus { border-color: var(--primary); }
+.nav-container {
+    position: relative;
+    background: var(--border);
+    padding: 4px;
+    border-radius: 18px;
+    display: flex;
+    margin-bottom: 30px;
+}
 
-        .card { 
-            background: var(--surface); padding: 25px; 
-            border-radius: var(--radius); border: 1px solid var(--border); 
-            margin-top: 16px;
-        }
+.nav-indicator {
+    position: absolute;
+    height: calc(100% - 8px);
+    background: var(--surface);
+    border-radius: 14px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
 
-        .badge { 
-            font-size: 10px; font-weight: 800; text-transform: uppercase; 
-            color: var(--primary); background: rgba(var(--primary-rgb), 0.1); 
-            padding: 4px 10px; border-radius: 6px; margin-bottom: 8px; display: inline-block;
-        }
+.tab { 
+    flex: 1; padding: 12px 0;
+    font-family: var(--font-brand); font-size: 14px; font-weight: 700; 
+    cursor: pointer; border: none; background: transparent;
+    color: var(--muted); position: relative; z-index: 2;
+}
+.tab.active { color: var(--text); }
 
-        #instantMatch {
-            margin-bottom: 30px; padding: 35px;
-            background: var(--primary); color: white;
-            border-radius: 28px; display: none;
-            box-shadow: 0 20px 40px rgba(var(--primary-rgb), 0.3);
-        }
+#searchBar { 
+    font-size: 18px; padding: 20px 25px; 
+    border-radius: 20px; border: 2px solid transparent; 
+    background: var(--surface); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    width: 100%; outline: none; color: var(--text);
+    box-sizing: border-box;
+}
+#searchBar:focus { border-color: var(--primary); }
 
-        .view { display: none; }
-        .view.active { display: block; }
+.card { 
+    background: var(--surface); padding: 25px; 
+    border-radius: var(--radius); border: 1px solid var(--border); 
+    margin-top: 16px;
+}
 
-        .btn { 
-            font-family: var(--font-brand); padding: 16px; border-radius: 14px; 
-            border: none; font-weight: 800; cursor: pointer;
-            width: 100%;
-        }
-        .btn-primary { background: var(--primary); color: white; }
+.badge { 
+    font-size: 10px; font-weight: 800; text-transform: uppercase; 
+    color: var(--primary); background: rgba(var(--primary-rgb), 0.1); 
+    padding: 4px 10px; border-radius: 6px; margin-bottom: 8px; display: inline-block;
+}
 
-        input, textarea {
-            width: 100%; padding: 14px; border-radius: 12px;
-            border: 1px solid var(--border); background: var(--bg);
-            color: var(--text); box-sizing: border-box; margin-bottom: 12px;
-        }
+#instantMatch {
+    margin-bottom: 30px; padding: 35px;
+    background: var(--primary); color: white;
+    border-radius: 28px; display: none;
+    box-shadow: 0 20px 40px rgba(var(--primary-rgb), 0.3);
+}
 
-        .admin-item {
-            padding: 15px; background: var(--bg); border-radius: 12px;
-            margin-bottom: 10px; border: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+.view { display: none; }
+.view.active { display: block; }
 
-        #globalSuccess {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--success); color: white;
-            padding: 12px 24px; border-radius: 100px;
-            font-weight: 800; z-index: 1000; transition: 0.5s;
-        }
-        #globalSuccess.show { transform: translateX(-50%) translateY(0); }
+.btn { 
+    font-family: var(--font-brand); padding: 16px; border-radius: 14px; 
+    border: none; font-weight: 800; cursor: pointer;
+    width: 100%;
+}
+.btn-primary { background: var(--primary); color: white; }
 
-        footer { padding: 40px 20px; text-align: center; font-size: 13px; color: var(--muted); }
-    </style>
+input, textarea {
+    width: 100%; padding: 14px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); box-sizing: border-box; margin-bottom: 12px;
+}
+
+.admin-item {
+    padding: 15px; background: var(--bg); border-radius: 12px;
+    margin-bottom: 10px; border: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+#globalSuccess {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--success); color: white;
+    padding: 12px 24px; border-radius: 100px;
+    font-weight: 800; z-index: 1000; transition: 0.5s;
+}
+#globalSuccess.show { transform: translateX(-50%) translateY(0); }
+
+footer { padding: 40px 20px; text-align: center; font-size: 13px; color: var(--muted); }
+</style>
 </head>
 <body>
-    <div id="globalSuccess">Operation Successful</div>
-
-    <div class="container">
-        <header>
-            <h1 class="logo" onclick="switchMode('search', 0)">TrethFlow<div class="dot"></div></h1>
-            <div id="statusPill" class="status-pill">
-                <div class="status-dot"></div>
-                <span id="statusTxt">Connecting...</span>
-            </div>
-        </header>
-
-        <div class="nav-container" id="navContainer">
-            <div id="navIndicator" class="nav-indicator"></div>
-            <button id="tab-search" class="tab active" onclick="switchMode('search', 0)">Search</button>
-            <button id="tab-request" class="tab" onclick="switchMode('request', 1)">Contribute</button>
-            <button id="tab-settings" class="tab" onclick="switchMode('settings', 2)">Settings</button>
-            <button id="tab-admin" class="tab" style="display:none;" onclick="switchMode('admin', 3)">Admin</button>
+<div id="globalSuccess">Operation Successful</div>
+<div class="container">
+    <header>
+        <h1 class="logo" onclick="switchMode('search', 0)">TrethFlow<div class="dot"></div></h1>
+        <div id="statusPill" class="status-pill">
+            <div class="status-dot"></div>
+            <span id="statusTxt">Connecting...</span>
         </div>
+    </header>
 
-        <div id="view-search" class="view active">
-            <input type="text" id="searchBar" placeholder="Search knowledge base..." autocomplete="off">
-            <div id="instantMatch">
-                <span id="matchCat" class="badge" style="background:rgba(255,255,255,0.2); color:white;">Category</span>
-                <h2 id="matchTitle" style="font-size:28px; margin: 10px 0; font-family:var(--font-brand);">Topic</h2>
-                <p id="matchVal" style="margin:0; opacity:0.9; font-size:16px;"></p>
-            </div>
-            <div id="resultsList" style="margin-top: 20px;"></div>
+    <div class="nav-container" id="navContainer">
+        <div id="navIndicator" class="nav-indicator"></div>
+        <button id="tab-search" class="tab active" onclick="switchMode('search', 0)">Search</button>
+        <button id="tab-request" class="tab" onclick="switchMode('request', 1)">Contribute</button>
+        <button id="tab-settings" class="tab" onclick="switchMode('settings', 2)">Settings</button>
+        <button id="tab-admin" class="tab" style="display:none;" onclick="switchMode('admin', 3)">Admin</button>
+        <button id="tab-feedback-admin" class="tab" style="display:none;" onclick="switchMode('feedback-admin', 4)">Feedback</button>
+    </div>
+
+    <!-- SEARCH VIEW -->
+    <div id="view-search" class="view active">
+        <input type="text" id="searchBar" placeholder="Search knowledge base..." autocomplete="off">
+        <div id="instantMatch">
+            <span id="matchCat" class="badge" style="background:rgba(255,255,255,0.2); color:white;">Category</span>
+            <h2 id="matchTitle" style="font-size:28px; margin: 10px 0; font-family:var(--font-brand);">Topic</h2>
+            <p id="matchVal" style="margin:0; opacity:0.9; font-size:16px;"></p>
         </div>
+        <div id="resultsList" style="margin-top: 20px;"></div>
+    </div>
 
-        <div id="view-request" class="view">
-            <div class="card">
-                <h3 style="margin-top:0; font-family:var(--font-brand);">Suggest Content</h3>
-                <input type="text" id="reqTitle" placeholder="Title">
-                <input type="text" id="reqCat" placeholder="Category">
-                <textarea id="reqInfo" placeholder="Details..." rows="4"></textarea>
-                <button class="btn btn-primary" onclick="submitRequest()">Send Suggestion</button>
-            </div>
-        </div>
-
-        <div id="view-settings" class="view">
-            <div class="card">
-                <h3 style="margin:0 0 20px 0; font-family:var(--font-brand);">Customization</h3>
-                <button class="btn" style="background:var(--border); margin-bottom: 20px" onclick="toggleTheme()">Toggle Dark Mode</button>
-                <p style="font-size: 12px; color: var(--muted)">TrethFlow v2.0 - Secured Architecture</p>
-            </div>
-        </div>
-
-        <div id="view-admin" class="view">
-            <div class="card">
-                <h3 style="margin-top:0; font-family:var(--font-brand);">Add Direct Entry</h3>
-                <input type="text" id="admKey" placeholder="Topic Title">
-                <input type="text" id="admCat" placeholder="Category">
-                <textarea id="admVal" placeholder="Information..." rows="3"></textarea>
-                <button class="btn btn-primary" onclick="adminAddEntry()">Publish Now</button>
-            </div>
-            <div class="card">
-                <h3 style="margin:0 0 15px 0; font-family:var(--font-brand); font-size:16px;">Moderation Queue</h3>
-                <div id="pendingRequests"></div>
-            </div>
+    <!-- REQUEST VIEW -->
+    <div id="view-request" class="view">
+        <div class="card">
+            <h3 style="margin-top:0; font-family:var(--font-brand);">Suggest Content</h3>
+            <input type="text" id="reqTitle" placeholder="Title">
+            <input type="text" id="reqCat" placeholder="Category">
+            <textarea id="reqInfo" placeholder="Details..." rows="4"></textarea>
+            <button class="btn btn-primary" onclick="submitRequest()">Send Suggestion</button>
         </div>
     </div>
 
-    <footer>&copy; 2026 Stephen MacDonald.</footer>
+    <!-- SETTINGS VIEW -->
+    <div id="view-settings" class="view">
+        <div class="card">
+            <h3 style="margin:0 0 20px 0; font-family:var(--font-brand);">Customization</h3>
+            <button class="btn" style="background:var(--border); margin-bottom: 20px" onclick="toggleTheme()">Toggle Dark Mode</button>
+            <div>
+                <h4>Feedback</h4>
+                <textarea id="userFeedback" placeholder="Leave feedback..." rows="3"></textarea>
+                <button class="btn btn-primary" onclick="submitFeedback()">Send Feedback</button>
+            </div>
+            <p style="font-size: 12px; color: var(--muted)">TrethFlow v2.0 - Secured Architecture</p>
+        </div>
+    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    <!-- ADMIN VIEW -->
+    <div id="view-admin" class="view">
+        <div class="card">
+            <h3 style="margin-top:0; font-family:var(--font-brand);">Add Direct Entry</h3>
+            <input type="text" id="admKey" placeholder="Topic Title">
+            <input type="text" id="admCat" placeholder="Category">
+            <textarea id="admVal" placeholder="Information..." rows="3"></textarea>
+            <button class="btn btn-primary" onclick="adminAddEntry()">Publish Now</button>
+        </div>
+        <div class="card">
+            <h3 style="margin:0 0 15px 0; font-family:var(--font-brand); font-size:16px;">Moderation Queue</h3>
+            <div id="pendingRequests"></div>
+        </div>
+    </div>
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-trethflow';
+    <!-- FEEDBACK ADMIN VIEW -->
+    <div id="view-feedback-admin" class="view">
+        <div class="card">
+            <h3 style="margin-top:0; font-family:var(--font-brand);">User Feedback</h3>
+            <div id="feedbackList"></div>
+        </div>
+    </div>
+</div>
 
-        // MANDATORY RULE 1: Correct collection paths
-        // We use /artifacts/{appId}/public/data/{collection}
-        const KNOWLEDGE_COLLECTION = 'knowledge_base';
-        const REQUESTS_COLLECTION = 'user_requests';
+<footer>&copy; 2026 Stephen MacDonald.</footer>
 
-        const getKnowledgeRef = () => collection(db, 'artifacts', appId, 'public', 'data', KNOWLEDGE_COLLECTION);
-        const getRequestsRef = () => collection(db, 'artifacts', appId, 'public', 'data', REQUESTS_COLLECTION);
+<script type="module">
+// --- FIREBASE CONFIG ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        let mainData = [];
-        let currentIdx = 0;
-        const ADMIN_CODE = "displayflex11";
+const firebaseConfig = {
+  apiKey: "AIzaSyA19d5U_di3_B2tmmDdj8wi61xO6DAlGok",
+  authDomain: "trethsearch.firebaseapp.com",
+  projectId: "trethsearch",
+  storageBucket: "trethsearch.firebasestorage.app",
+  messagingSenderId: "169526814734",
+  appId: "1:169526814734:web:bc376db9f61603935bf45f",
+  measurementId: "G-BCT7498TBJ"
+};
 
-        function updateIndicator(index) {
-            const indicator = document.getElementById('navIndicator');
-            const tabs = Array.from(document.querySelectorAll('.tab')).filter(t => t.style.display !== 'none');
-            const target = tabs[index];
-            if (target && indicator) {
-                indicator.style.width = target.offsetWidth + 'px';
-                indicator.style.left = target.offsetLeft + 'px';
-            }
-        }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = 'trethflow-main';
 
-        window.switchMode = (mode, index) => {
-            currentIdx = index;
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            const view = document.getElementById(`view-${mode}`);
-            const tab = document.getElementById(`tab-${mode}`);
-            if(view) view.classList.add('active');
-            if(tab) tab.classList.add('active');
-            updateIndicator(index);
-        };
+const KNOWLEDGE_COLLECTION = 'knowledge_base';
+const REQUESTS_COLLECTION = 'user_requests';
+const FEEDBACK_COLLECTION = 'feedback';
 
-        window.toggleTheme = () => document.body.classList.toggle('dark-theme');
+const getKnowledgeRef = () => collection(db, 'artifacts', appId, 'public', 'data', KNOWLEDGE_COLLECTION);
+const getRequestsRef = () => collection(db, 'artifacts', appId, 'public', 'data', REQUESTS_COLLECTION);
+const getFeedbackRef = () => collection(db, 'artifacts', appId, 'public', 'data', FEEDBACK_COLLECTION);
 
-        const showToast = (msg) => {
-            const el = document.getElementById('globalSuccess');
-            if(msg) el.innerText = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 2500);
-        };
+let mainData = [];
+let currentIdx = 0;
+let isAdmin = false;
+const ADMIN_CODE = "displayflex11";
 
-        // Actions
-        window.submitRequest = async () => {
-            if (!auth.currentUser) return;
-            const title = document.getElementById('reqTitle').value.trim();
-            const cat = document.getElementById('reqCat').value.trim() || "General";
-            const info = document.getElementById('reqInfo').value.trim();
-            if(!title || !info) return;
-            
-            try {
-                await addDoc(getRequestsRef(), { title, cat, info, timestamp: serverTimestamp() });
-                document.getElementById('reqTitle').value = "";
-                document.getElementById('reqInfo').value = "";
-                showToast("Suggestion Sent!");
-                setTimeout(() => switchMode('search', 0), 1000);
-            } catch(e) { console.error(e); }
-        };
+// --- UI FUNCTIONS ---
+function updateIndicator(index) {
+    const indicator = document.getElementById('navIndicator');
+    const tabs = Array.from(document.querySelectorAll('.tab')).filter(t => t.style.display !== 'none');
+    const target = tabs[index];
+    if (target && indicator) {
+        indicator.style.width = target.offsetWidth + 'px';
+        indicator.style.left = target.offsetLeft + 'px';
+    }
+}
 
-        window.adminAddEntry = async () => {
-            if (!auth.currentUser) return;
-            const title = document.getElementById('admKey').value.trim();
-            const cat = document.getElementById('admCat').value.trim() || "General";
-            const info = document.getElementById('admVal').value.trim();
-            if(!title || !info) return;
-            
-            try {
-                await addDoc(getKnowledgeRef(), { title, cat, info });
-                document.getElementById('admKey').value = "";
-                document.getElementById('admVal').value = "";
-                showToast("Entry Published!");
-            } catch(e) { console.error(e); }
-        };
+window.switchMode = (mode, index) => {
+    currentIdx = index;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const view = document.getElementById(`view-${mode}`);
+    const tab = document.getElementById(`tab-${mode}`);
+    if(view) view.classList.add('active');
+    if(tab) tab.classList.add('active');
+    updateIndicator(index);
+};
 
-        window.approveRequest = async (requestId, title, cat, info) => {
-            try {
-                await addDoc(getKnowledgeRef(), { title, cat, info });
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', REQUESTS_COLLECTION, requestId));
-                showToast("Request Approved");
-            } catch(e) { console.error(e); }
-        };
+window.toggleTheme = () => document.body.classList.toggle('dark-theme');
 
-        const performSearch = (queryStr) => {
-            const q = queryStr.toLowerCase().trim();
-            if(q === ADMIN_CODE) {
-                document.getElementById('tab-admin').style.display = "block";
-                switchMode('admin', 3);
-                document.getElementById('searchBar').value = "";
-                return;
-            }
+// --- TOAST ---
+const showToast = (msg) => {
+    const el = document.getElementById('globalSuccess');
+    if(msg) el.innerText = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+};
 
-            const resultsList = document.getElementById('resultsList');
-            const instantMatch = document.getElementById('instantMatch');
-            resultsList.innerHTML = "";
+// --- SUBMIT REQUEST ---
+window.submitRequest = async () => {
+    if (!auth.currentUser) return;
+    const title = document.getElementById('reqTitle').value.trim();
+    const cat = document.getElementById('reqCat').value.trim() || "General";
+    const info = document.getElementById('reqInfo').value.trim();
+    if(!title || !info) return;
+    try {
+        await addDoc(getRequestsRef(), { title, cat, info, timestamp: serverTimestamp() });
+        document.getElementById('reqTitle').value = "";
+        document.getElementById('reqCat').value = "";
+        document.getElementById('reqInfo').value = "";
+        showToast("Suggestion Sent!");
+        setTimeout(() => switchMode('search', 0), 1000);
+    } catch(e) { console.error(e); }
+};
 
-            if(!q) {
-                instantMatch.style.display = "none";
-                return;
-            }
+// --- SUBMIT FEEDBACK ---
+window.submitFeedback = async () => {
+    if (!auth.currentUser) return;
+    const fb = document.getElementById('userFeedback').value.trim();
+    if(!fb) return;
+    try {
+        await addDoc(getFeedbackRef(), { feedback: fb, timestamp: serverTimestamp() });
+        document.getElementById('userFeedback').value = "";
+        showToast("Feedback Sent!");
+    } catch(e) { console.error(e); }
+};
 
-            const exact = mainData.find(d => d.title && d.title.toLowerCase() === q);
-            if(exact) {
-                instantMatch.style.display = "block";
-                document.getElementById('matchCat').innerText = exact.cat || "Topic";
-                document.getElementById('matchTitle').innerText = exact.title;
-                document.getElementById('matchVal').innerText = exact.info;
-            } else {
-                instantMatch.style.display = "none";
-            }
+// --- ADMIN ADD ENTRY ---
+window.adminAddEntry = async () => {
+    if (!auth.currentUser) return;
+    const title = document.getElementById('admKey').value.trim();
+    const cat = document.getElementById('admCat').value.trim() || "General";
+    const info = document.getElementById('admVal').value.trim();
+    if(!title || !info) return;
+    try {
+        await addDoc(getKnowledgeRef(), { title, cat, info });
+        document.getElementById('admKey').value = "";
+        document.getElementById('admCat').value = "";
+        document.getElementById('admVal').value = "";
+        showToast("Entry Published!");
+    } catch(e) { console.error(e); }
+};
 
-            const filtered = mainData.filter(d => 
-                ( (d.title && d.title.toLowerCase().includes(q)) || (d.info && d.info.toLowerCase().includes(q)) ) &&
-                (!exact || d.title !== exact.title)
-            );
+// --- APPROVE / DELETE REQUESTS & FEEDBACK ---
+window.approveRequest = async (requestId, title, cat, info) => {
+    try {
+        await addDoc(getKnowledgeRef(), { title, cat, info });
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', REQUESTS_COLLECTION, requestId));
+        showToast("Request Approved");
+    } catch(e) { console.error(e); }
+};
 
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<span class="badge">${item.cat || 'General'}</span><h3>${item.title}</h3><p style="color:var(--muted)">${item.info}</p>`;
-                resultsList.appendChild(div);
-            });
-        };
+window.deleteRequest = async (requestId) => {
+    try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', REQUESTS_COLLECTION, requestId));
+        showToast("Request Declined");
+    } catch(e) { console.error(e); }
+};
 
-        // MANDATORY RULE 3: Auth BEFORE Queries
-        const initApp = async () => {
-            try {
-                // Initial Authentication
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+window.deleteEntry = async (entryId) => {
+    try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', KNOWLEDGE_COLLECTION, entryId));
+        showToast("Entry Deleted");
+    } catch(e) { console.error(e); }
+};
 
-                // Auth state listener to handle data
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        console.log("Authenticated as:", user.uid);
-                        
-                        // Setup Real-time Knowledge Sync
-                        onSnapshot(getKnowledgeRef(), (snap) => {
-                            mainData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                            document.getElementById('statusPill').classList.add('online');
-                            document.getElementById('statusTxt').innerText = "Live";
-                            performSearch(document.getElementById('searchBar').value);
-                        }, (err) => {
-                            console.error("Knowledge listener error:", err);
-                        });
+window.deleteFeedback = async (fbId) => {
+    try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', FEEDBACK_COLLECTION, fbId));
+        showToast("Feedback Deleted");
+    } catch(e) { console.error(e); }
+};
 
-                        // Setup Real-time Requests Sync (for Admin)
-                        onSnapshot(getRequestsRef(), (snap) => {
-                            const list = document.getElementById('pendingRequests');
-                            list.innerHTML = snap.empty ? "<p style='color:var(--muted); font-size:12px;'>No pending requests.</p>" : "";
-                            snap.forEach(d => {
-                                const data = d.data();
-                                const div = document.createElement('div');
-                                div.className = 'admin-item';
-                                div.innerHTML = `
-                                    <div style="font-size:12px; flex:1; margin-right: 10px">
-                                        <strong>${data.title}</strong><br>
-                                        <span style="color:var(--muted)">${data.info.substring(0,60)}...</span>
-                                    </div>
-                                    <button class="btn" style="width:auto; padding:6px 12px; font-size:10px; background:var(--success); color:white;" 
-                                        onclick="approveRequest('${d.id}', '${data.title.replace(/'/g, "\\'")}', '${data.cat.replace(/'/g, "\\'")}', '${data.info.replace(/'/g, "\\'")}')">Approve</button>
-                                `;
-                                list.appendChild(div);
-                            });
-                        }, (err) => {
-                            console.error("Requests listener error:", err);
-                        });
-                    }
+// --- SEARCH ---
+const performSearch = (queryStr) => {
+    const q = queryStr.toLowerCase().trim();
+    if(q === ADMIN_CODE) {
+        isAdmin = true;
+        document.getElementById('tab-admin').style.display = "block";
+        document.getElementById('tab-feedback-admin').style.display = "block";
+        switchMode('admin', 3);
+        document.getElementById('searchBar').value = "";
+        return;
+    }
+    const resultsList = document.getElementById('resultsList');
+    const instantMatch = document.getElementById('instantMatch');
+    resultsList.innerHTML = "";
+    if(!q) {
+        instantMatch.style.display = "none";
+        return;
+    }
+    const exact = mainData.find(d => d.title && d.title.toLowerCase() === q);
+    if(exact) {
+        instantMatch.style.display = "block";
+        document.getElementById('matchCat').innerText = exact.cat || "Topic";
+        document.getElementById('matchTitle').innerText = exact.title;
+        document.getElementById('matchVal').innerText = exact.info;
+    } else {
+        instantMatch.style.display = "none";
+    }
+    const filtered = mainData.filter(d => 
+        ((d.title && d.title.toLowerCase().includes(q)) || (d.info && d.info.toLowerCase().includes(q))) &&
+        (!exact || d.title !== exact.title)
+    );
+    filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<span class="badge">${item.cat || 'General'}</span>
+            <h3>${item.title}</h3>
+            <p style="color:var(--muted)">${item.info}</p>
+            ${isAdmin ? `<button style="background:var(--danger); color:white; border:none; border-radius:6px; padding:4px 10px;" onclick="deleteEntry('${item.id}')">Delete</button>` : ''}`;
+        resultsList.appendChild(div);
+    });
+};
+
+// --- INIT APP ---
+const initApp = async () => {
+    try {
+        await signInAnonymously(auth);
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Authenticated as:", user.uid);
+
+                onSnapshot(getKnowledgeRef(), (snap) => {
+                    mainData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    document.getElementById('statusPill').classList.add('online');
+                    document.getElementById('statusTxt').innerText = "Live";
+                    performSearch(document.getElementById('searchBar').value);
                 });
 
-                // UI Listeners
-                document.getElementById('searchBar').addEventListener('input', (e) => performSearch(e.target.value));
-                window.addEventListener('resize', () => updateIndicator(currentIdx));
-                setTimeout(() => updateIndicator(0), 500);
+                // Requests
+                const renderRequests = (snap) => {
+                    const list = document.getElementById('pendingRequests');
+                    list.innerHTML = snap.empty ? "<p style='color:var(--muted); font-size:12px;'>No pending requests.</p>" : "";
+                    snap.forEach(d => {
+                        const data = d.data();
+                        const div = document.createElement('div');
+                        div.className = 'admin-item';
+                        let buttons = isAdmin ? `
+                            <button class="btn" style="width:auto; padding:6px 12px; font-size:10px; background:var(--success); color:white;" 
+                                onclick="approveRequest('${d.id}', '${data.title.replace(/'/g, "\\'")}', '${data.cat.replace(/'/g, "\\'")}', '${data.info.replace(/'/g, "\\'")}')">Approve</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; font-size:10px; background:var(--danger); color:white;" 
+                                onclick="deleteRequest('${d.id}')">Decline</button>` : '';
+                        div.innerHTML = `<div style="font-size:12px; flex:1; margin-right: 10px"><strong>${data.title}</strong><br><span style="color:var(--muted)">${data.info.substring(0,60)}...</span></div>${buttons}`;
+                        list.appendChild(div);
+                    });
+                };
+                onSnapshot(getRequestsRef(), renderRequests);
 
-            } catch (error) {
-                console.error("Initialization failed:", error);
+                // Feedback
+                const renderFeedback = (snap) => {
+                    const list = document.getElementById('feedbackList');
+                    list.innerHTML = snap.empty ? "<p style='color:var(--muted); font-size:12px;'>No feedback yet.</p>" : "";
+                    snap.forEach(d => {
+                        const data = d.data();
+                        const div = document.createElement('div');
+                        div.className = 'admin-item';
+                        let deleteBtn = isAdmin ? `<button class="btn" style="width:auto; padding:6px 12px; font-size:10px; background:var(--danger); color:white;" onclick="deleteFeedback('${d.id}')">Delete</button>` : '';
+                        div.innerHTML = `<div style="font-size:12px; flex:1; margin-right: 10px">${data.feedback}</div>${deleteBtn}`;
+                        list.appendChild(div);
+                    });
+                };
+                onSnapshot(getFeedbackRef(), renderFeedback);
+
             }
-        };
+        });
 
-        initApp();
-    </script>
+        document.getElementById('searchBar').addEventListener('input', (e) => performSearch(e.target.value));
+        window.addEventListener('resize', () => updateIndicator(currentIdx));
+        setTimeout(() => updateIndicator(0), 500);
+
+    } catch(e) { console.error(e); }
+};
+
+initApp();
+</script>
 </body>
 </html>
